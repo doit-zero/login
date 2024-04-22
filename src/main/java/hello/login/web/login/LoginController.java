@@ -12,6 +12,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -71,7 +72,7 @@ public class LoginController {
         return "redirect:/";
     }
 
-    @PostMapping("/login")
+    //@PostMapping("/login")
     public String loginV3(@Validated @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletRequest request){
         if(bindingResult.hasErrors()){
             return "login/loginForm";
@@ -96,6 +97,35 @@ public class LoginController {
 
         return "redirect:/";
     }
+    @PostMapping("/login")
+    public String loginV4(@Validated @ModelAttribute LoginForm form, BindingResult bindingResult,
+                          @RequestParam(defaultValue = "/") String redirectURL,
+                          HttpServletRequest request){
+
+        if(bindingResult.hasErrors()){
+            return "login/loginForm";
+        }
+
+        Member loginMember = loginService.login(form.getLoginId(), form.getPassword());
+        if(loginMember == null){
+            bindingResult.reject("loginFail","아이디 또는 비밀번호가 맞지 않습니다.");
+            return "login/loginForm";
+        }
+
+        // 로그인 성공 처리
+        // 세션이 있으면 세션 반환, 세션이 없으면 세션 생성
+        //getSession(true) 디폴트가 true임 세션의 creat임 false면 기존 세션 없으면 새로운 세션 생성하지 않음
+        HttpSession session = request.getSession();
+
+        // 세션에 로그인 회원 정보 보관
+        session.setAttribute(SessionConsts.LOGIN_MEMBER,loginMember);
+
+        // 세션 관리자를 통해 세션을 생성하고 회원 데이터를 보관
+        // sessionManager.createSession(loginMember,response);
+
+        return "redirect:"+redirectURL;
+    }
+
     //@PostMapping("/logout")
     public String logout(HttpServletResponse response){
         expireCookie(response,"memberId");
