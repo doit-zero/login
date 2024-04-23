@@ -8,7 +8,7 @@ import java.io.IOException;
 import java.util.UUID;
 
 @Slf4j
-public class LogFilter implements Filter {
+public class LoginFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         log.info("log filter init");
