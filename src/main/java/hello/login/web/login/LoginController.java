@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -72,7 +73,7 @@ public class LoginController {
         return "redirect:/";
     }
 
-    //@PostMapping("/login")
+    @PostMapping("/login")
     public String loginV3(@Validated @ModelAttribute LoginForm form, BindingResult bindingResult, HttpServletRequest request){
         if(bindingResult.hasErrors()){
             return "login/loginForm";
@@ -91,13 +92,12 @@ public class LoginController {
 
         // 세션에 로그인 회원 정보 보관
         session.setAttribute(SessionConsts.LOGIN_MEMBER,loginMember);
-
         // 세션 관리자를 통해 세션을 생성하고 회원 데이터를 보관
         // sessionManager.createSession(loginMember,response);
 
         return "redirect:/";
     }
-    @PostMapping("/login")
+   // @PostMapping("/login")
     public String loginV4(@Validated @ModelAttribute LoginForm form, BindingResult bindingResult,
                           @RequestParam(defaultValue = "/") String redirectURL,
                           HttpServletRequest request){
